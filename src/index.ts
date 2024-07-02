@@ -5,17 +5,17 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const METADATA_URL = process.env.SERVICE || '';
+//const METADATA_URL = process.env.SERVICE || '';
 const OUTPUT_FILE = 'metadataTypes.ts';
 
-const USERNAME = process.env.USERNAME || '';
-const PASSWORD = process.env.PASSWORD || '';
+//const USERNAME = process.env.USERNAME || '';
+//const PASSWORD = process.env.PASSWORD || '';
 
-console.log('Metadata URL:', METADATA_URL);
-console.log('Output File:', OUTPUT_FILE);
-console.log('Username:', USERNAME);
+//console.log('Metadata URL:', METADATA_URL);
+//console.log('Output File:', OUTPUT_FILE);
+//console.log('Username:', USERNAME);
 
-const fetchMetadata = async () => {
+const fetchMetadata = async (METADATA_URL: string, USERNAME: string, PASSWORD: string) => {
     try {
         console.log('Attempting to fetch metadata...');
         const response = await axios.get(METADATA_URL, {
@@ -109,9 +109,9 @@ const writeTypesToFile = (types: string) => {
     console.log(`Types written to ${OUTPUT_FILE}`);
 };
 
-const mainFun = async () => {
+const mainFun = async (metadataUrl: string, username: string, password: string) => {
     try {
-        const metadataXml = await fetchMetadata();
+        const metadataXml = await fetchMetadata(metadataUrl, username, password);
         const parsedMetadata = await parseMetadata(metadataXml);
         const typescriptTypes = generateTypescriptTypes(parsedMetadata);
         writeTypesToFile(typescriptTypes);
@@ -120,6 +120,6 @@ const mainFun = async () => {
     }
 };
 
-mainFun().catch(error => console.error(error));
+mainFun(process.argv[2], process.argv[3], process.argv[4]).catch(error => console.error(error));
 
 export const main = mainFun;

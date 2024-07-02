@@ -18,14 +18,14 @@ const xml2js_1 = require("xml2js");
 const fs_1 = __importDefault(require("fs"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const METADATA_URL = process.env.SERVICE || '';
+//const METADATA_URL = process.env.SERVICE || '';
 const OUTPUT_FILE = 'metadataTypes.ts';
-const USERNAME = process.env.USERNAME || '';
-const PASSWORD = process.env.PASSWORD || '';
-console.log('Metadata URL:', METADATA_URL);
-console.log('Output File:', OUTPUT_FILE);
-console.log('Username:', USERNAME);
-const fetchMetadata = () => __awaiter(void 0, void 0, void 0, function* () {
+//const USERNAME = process.env.USERNAME || '';
+//const PASSWORD = process.env.PASSWORD || '';
+//console.log('Metadata URL:', METADATA_URL);
+//console.log('Output File:', OUTPUT_FILE);
+//console.log('Username:', USERNAME);
+const fetchMetadata = (METADATA_URL, USERNAME, PASSWORD) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log('Attempting to fetch metadata...');
         const response = yield axios_1.default.get(METADATA_URL, {
@@ -110,9 +110,9 @@ const writeTypesToFile = (types) => {
     fs_1.default.writeFileSync(OUTPUT_FILE, types, { encoding: 'utf8' });
     console.log(`Types written to ${OUTPUT_FILE}`);
 };
-const mainFun = () => __awaiter(void 0, void 0, void 0, function* () {
+const mainFun = (metadataUrl, username, password) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const metadataXml = yield fetchMetadata();
+        const metadataXml = yield fetchMetadata(metadataUrl, username, password);
         const parsedMetadata = yield parseMetadata(metadataXml);
         const typescriptTypes = generateTypescriptTypes(parsedMetadata);
         writeTypesToFile(typescriptTypes);
@@ -121,5 +121,5 @@ const mainFun = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error('An error occurred in the main function:', error);
     }
 });
-mainFun().catch(error => console.error(error));
+mainFun(process.argv[2], process.argv[3], process.argv[4]).catch(error => console.error(error));
 exports.main = mainFun;

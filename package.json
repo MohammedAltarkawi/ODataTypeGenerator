@@ -1,14 +1,16 @@
 {
   "name": "odata-types-generator",
-  "version": "1.0.0",
+  "version": "1.0.9",
   "description": "A tool to convert OData metadata to TypeScript types",
   "main": "src/index.ts",
   "bin": {
-    "odatatypegenerator": "./bin/odatatypegenerator.js"
+    "odatatypegenerator": "./bin/odatatypegenerator.js",
+    "generate-types": "./scripts/read-config-and-run.js"
   },
   "scripts": {
     "build": "tsc",
     "start": "ts-node src/index.ts",
+    "generate-types": "node ./scripts/read-config-and-run.js",
     "odatatypegenerator": "node ./bin/odatatypegenerator.js"
   },
   "keywords": [],
@@ -17,6 +19,7 @@
   "dependencies": {
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
+    "js-yaml": "^4.1.0",
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
