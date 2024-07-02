@@ -1,37 +1,25 @@
-## Application Details
-|               |
-| ------------- |
+## Overview
+This tool helps you generate types for TypeScript from OData.
 
-
-## Odata-Type-Generator
-
-
-
-### Starting the  app
-
--   Clone the repository
+## Installing
+To install the tool, use the following npm command:
+```
+npm i odata-types-generator 
 ```
 
+## Configuration
+- Add the following script to your package.json:
 ```
-
--   Install dependencies
+"scripts": {
+    "odata-type-generator": "generate-types"
+}
 ```
-npm install
+- Ensure the server is specified in ui5.yaml under the custom middleware fiori-tools-proxy. If not, you can define the server name in a .env file as SERVER_URL.
+- Make sure to include the USERNAME and PASSWORD of the server in the .env file.
+
+
+## Starting the tool
+To start the tool, run the following npm command:
 ```
-
--   Launch the app
+npm run odata-type-generator 
 ```
-npm run start-noflp
-```
-
-- It is also possible to run the application using mock data that reflects the OData Service URL supplied during application generation.  In order to run the application with Mock Data, run the following from the generated app root folder:
-
-```
-npm run start-mock
-```
-
-#### Pre-requisites:
-
-1. Active NodeJS LTS (Long Term Support) version and associated supported NPM version.  (See https://nodejs.org)
-
-
