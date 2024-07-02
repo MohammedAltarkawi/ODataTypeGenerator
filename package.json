@@ -21,6 +21,10 @@
   ],
   "author": "Mohammed Altarkawi",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MohammedAltarkawi/ODataTypeGenerator.git"
+  },
   "dependencies": {
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
