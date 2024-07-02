@@ -38,7 +38,25 @@ const parseMetadata = async (xml: string) => {
 
 const generateTypescriptTypes = (parsedMetadata: any): string => {
     const entityTypes = parsedMetadata['edmx:Edmx']['edmx:DataServices'][0]['Schema'][0]['EntityType'];
+    const associations = parsedMetadata['edmx:Edmx']['edmx:DataServices'][0]['Schema'][0]['Association'];
+    const associationMap = new Map<string, { role: string; type: string }[]>();
+
+    // Map associations to their types
+    associations.forEach((association: any) => {
+        const associationName = association['$']['Name'];
+        const ends = association['End'].map((end: any) => ({
+            role: end['$']['Role'],
+            type: end['$']['Type'].split('.').pop()
+        }));
+        associationMap.set(associationName, ends);
+    });
+
     let types = '';
+
+    const entityTypeMap = new Map<string, any>();
+    entityTypes.forEach((entity: any) => {
+        entityTypeMap.set(entity['$']['Name'], entity);
+    });
 
     entityTypes.forEach((entity: any) => {
         const typeName = entity['$']['Name'];
@@ -46,6 +64,7 @@ const generateTypescriptTypes = (parsedMetadata: any): string => {
         let keyProperties = '';
         let navigationProperties = '';
 
+        // Add regular properties
         entity['Property'].forEach((property: any) => {
             const propName = property['$']['Name'];
             const propType = property['$']['Type'];
@@ -55,8 +74,8 @@ const generateTypescriptTypes = (parsedMetadata: any): string => {
             properties += `
     /**
      * OData Attributes:
-     * |Attribute Name | Attribute Value |
-     * | --- | ---|
+     * | Attribute Name | Attribute Value |
+     * | --- | --- |
      * | Name | \`${propName}\` |
      * | Type | \`${propType}\` |
      * | Nullable | \`${isNullable}\` |
@@ -71,16 +90,23 @@ const generateTypescriptTypes = (parsedMetadata: any): string => {
             }
         });
 
+        // Add navigation properties
         if (entity['NavigationProperty']) {
             entity['NavigationProperty'].forEach((navProperty: any) => {
                 const navPropName = navProperty['$']['Name'];
-                const navPropType = navProperty['$']['Type']; // Placeholder for the actual type
+                const relationship = navProperty['$']['Relationship'].split('.').pop();
                 const toRole = navProperty['$']['ToRole'];
-                const relationship = navProperty['$']['Relationship'];
 
-                navigationProperties += `
-    ${navPropName}?: ${navPropType}[]; // Replace with actual type
+                const associationEnds = associationMap.get(relationship);
+                if (associationEnds) {
+                    const relatedEntityType = associationEnds.find((end) => end.role === toRole)?.type;
+
+                    if (relatedEntityType) {
+                        navigationProperties += `
+    ${navPropName}: ${relatedEntityType}[];
 `;
+                    }
+                }
             });
         }
 
@@ -91,7 +117,7 @@ export interface ${typeName} {${properties}${navigationProperties}
 export type ${typeName}Id = {${keyProperties}
 }
 
-export interface Editable${typeName} extends Pick<${typeName}, ${Object.keys(entity['Property']).map(key => `"${entity['Property'][key]['$']['Name']}"`).join(' | ')}> { }
+export interface Editable${typeName} extends Pick<${typeName}, ${entity['Property'].map((property: any) => `"${property['$']['Name']}"`).join(' | ')}> { }
 `;
     });
 
