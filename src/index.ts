@@ -5,15 +5,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-//const METADATA_URL = process.env.SERVICE || '';
 const OUTPUT_FILE = 'metadataTypes.ts';
-
-//const USERNAME = process.env.USERNAME || '';
-//const PASSWORD = process.env.PASSWORD || '';
-
-//console.log('Metadata URL:', METADATA_URL);
-//console.log('Output File:', OUTPUT_FILE);
-//console.log('Username:', USERNAME);
 
 const fetchMetadata = async (METADATA_URL: string, USERNAME: string, PASSWORD: string) => {
     try {
@@ -52,6 +44,7 @@ const generateTypescriptTypes = (parsedMetadata: any): string => {
         const typeName = entity['$']['Name'];
         let properties = '';
         let keyProperties = '';
+        let navigationProperties = '';
 
         entity['Property'].forEach((property: any) => {
             const propName = property['$']['Name'];
@@ -78,8 +71,21 @@ const generateTypescriptTypes = (parsedMetadata: any): string => {
             }
         });
 
+        if (entity['NavigationProperty']) {
+            entity['NavigationProperty'].forEach((navProperty: any) => {
+                const navPropName = navProperty['$']['Name'];
+                const navPropType = navProperty['$']['Type']; // Placeholder for the actual type
+                const toRole = navProperty['$']['ToRole'];
+                const relationship = navProperty['$']['Relationship'];
+
+                navigationProperties += `
+    ${navPropName}?: ${navPropType}[]; // Replace with actual type
+`;
+            });
+        }
+
         types += `
-export interface ${typeName} {${properties}
+export interface ${typeName} {${properties}${navigationProperties}
 }
 
 export type ${typeName}Id = {${keyProperties}
@@ -98,6 +104,8 @@ const convertToTypescriptType = (odataType: string): string => {
             return 'string';
         case 'Edm.Int32':
             return 'number';
+        case 'Edm.Boolean':
+            return 'boolean';
         // Add more OData type mappings as needed
         default:
             return 'any';

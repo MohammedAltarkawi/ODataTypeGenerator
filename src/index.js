@@ -18,13 +18,7 @@ const xml2js_1 = require("xml2js");
 const fs_1 = __importDefault(require("fs"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-//const METADATA_URL = process.env.SERVICE || '';
 const OUTPUT_FILE = 'metadataTypes.ts';
-//const USERNAME = process.env.USERNAME || '';
-//const PASSWORD = process.env.PASSWORD || '';
-//console.log('Metadata URL:', METADATA_URL);
-//console.log('Output File:', OUTPUT_FILE);
-//console.log('Username:', USERNAME);
 const fetchMetadata = (METADATA_URL, USERNAME, PASSWORD) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log('Attempting to fetch metadata...');
@@ -61,6 +55,7 @@ const generateTypescriptTypes = (parsedMetadata) => {
         const typeName = entity['$']['Name'];
         let properties = '';
         let keyProperties = '';
+        let navigationProperties = '';
         entity['Property'].forEach((property) => {
             const propName = property['$']['Name'];
             const propType = property['$']['Type'];
@@ -83,8 +78,19 @@ const generateTypescriptTypes = (parsedMetadata) => {
 `;
             }
         });
+        if (entity['NavigationProperty']) {
+            entity['NavigationProperty'].forEach((navProperty) => {
+                const navPropName = navProperty['$']['Name'];
+                const navPropType = navProperty['$']['Type']; // Placeholder for the actual type
+                const toRole = navProperty['$']['ToRole'];
+                const relationship = navProperty['$']['Relationship'];
+                navigationProperties += `
+    ${navPropName}?: ${navPropType}[]; // Replace with actual type
+`;
+            });
+        }
         types += `
-export interface ${typeName} {${properties}
+export interface ${typeName} {${properties}${navigationProperties}
 }
 
 export type ${typeName}Id = {${keyProperties}
@@ -101,6 +107,8 @@ const convertToTypescriptType = (odataType) => {
             return 'string';
         case 'Edm.Int32':
             return 'number';
+        case 'Edm.Boolean':
+            return 'boolean';
         // Add more OData type mappings as needed
         default:
             return 'any';
