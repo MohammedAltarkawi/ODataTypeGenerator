@@ -12,30 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.main = void 0;
-const axios_1 = __importDefault(require("axios"));
+exports.writeTypesToFile = exports.generateTypescriptTypes = exports.parseMetadata = void 0;
 const xml2js_1 = require("xml2js");
 const fs_1 = __importDefault(require("fs"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const OUTPUT_FILE = 'metadataTypes.ts';
-const fetchMetadata = (METADATA_URL, USERNAME, PASSWORD) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        console.log('Attempting to fetch metadata...');
-        const response = yield axios_1.default.get(METADATA_URL, {
-            auth: {
-                username: USERNAME,
-                password: PASSWORD
-            }
-        });
-        console.log('Metadata fetched successfully');
-        return response.data;
-    }
-    catch (error) {
-        console.error('Error fetching metadata:', error);
-        throw error;
-    }
-});
 const parseMetadata = (xml) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         console.log('Attempting to parse metadata...');
@@ -48,6 +27,7 @@ const parseMetadata = (xml) => __awaiter(void 0, void 0, void 0, function* () {
         throw error;
     }
 });
+exports.parseMetadata = parseMetadata;
 const generateTypescriptTypes = (parsedMetadata) => {
     const entityTypes = parsedMetadata['edmx:Edmx']['edmx:DataServices'][0]['Schema'][0]['EntityType'];
     const associations = parsedMetadata['edmx:Edmx']['edmx:DataServices'][0]['Schema'][0]['Association'];
@@ -124,33 +104,19 @@ export interface Editable${typeName} extends Pick<${typeName}, ${entity['Propert
     });
     return types;
 };
+exports.generateTypescriptTypes = generateTypescriptTypes;
+const writeTypesToFile = (types, outputPath) => {
+    fs_1.default.writeFileSync(outputPath, types, { encoding: 'utf8' });
+    console.log(`Types written to ${outputPath}`);
+};
+exports.writeTypesToFile = writeTypesToFile;
 const convertToTypescriptType = (odataType) => {
     switch (odataType) {
         case 'Edm.String':
             return 'string';
         case 'Edm.Int32':
             return 'number';
-        case 'Edm.Boolean':
-            return 'boolean';
-        // Add more OData type mappings as needed
         default:
             return 'any';
     }
 };
-const writeTypesToFile = (types) => {
-    fs_1.default.writeFileSync(OUTPUT_FILE, types, { encoding: 'utf8' });
-    console.log(`Types written to ${OUTPUT_FILE}`);
-};
-const mainFun = (metadataUrl, username, password) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const metadataXml = yield fetchMetadata(metadataUrl, username, password);
-        const parsedMetadata = yield parseMetadata(metadataXml);
-        const typescriptTypes = generateTypescriptTypes(parsedMetadata);
-        writeTypesToFile(typescriptTypes);
-    }
-    catch (error) {
-        console.error('An error occurred in the main function:', error);
-    }
-});
-mainFun(process.argv[2], process.argv[3], process.argv[4]).catch(error => console.error(error));
-exports.main = mainFun;

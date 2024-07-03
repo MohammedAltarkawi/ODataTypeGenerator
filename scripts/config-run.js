@@ -23,7 +23,7 @@ const findManifest = () => {
 
     // Traverse upwards until we find the webapp directory
     while (true) {
-        const manifestPath = path.join(currentDir, '../../webapp/manifest.json');
+        const manifestPath = path.join(currentDir, '../webapp/manifest.json');
         if (fs.existsSync(manifestPath)) {
             return manifestPath;
         }
