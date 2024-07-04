@@ -110,13 +110,15 @@ export const generateCrudOperations = (parsedMetadata: any, typesFile: string): 
                 const navPropName = navProperty['$']['Name'];
                 const relationship = navProperty['$']['Relationship'].split('.').pop();
                 const toRole = navProperty['$']['ToRole'];
+                
 
                 const associationEnds = associationMap.get(relationship);
                 if (associationEnds) {
                     const relatedEntityType = associationEnds.find((end) => end.role === toRole)?.type;
-
+                    const capNavProperty = relatedEntityType.charAt(0).toUpperCase() + relatedEntityType.slice(1);
+                    const capProperty = typeName.charAt(0).toUpperCase() + typeName.slice(1);
                     if (relatedEntityType) {
-                        const navPropFunctionName = `get${relatedEntityType}By${typeName}`;
+                        const navPropFunctionName = `get${capNavProperty}By${capProperty}`;
                         classTemplate += `    async ${navPropFunctionName}(id: ${idTypeName}): Promise<${relatedEntityType}[]> {\n`;
                         classTemplate += `        return new Promise((resolve, reject) => {\n`;
                         classTemplate += `            this.oModel.read(\`/${typeNameSet}(\${this.idToQueryString(id)})/${navPropName}\`, {\n`;
