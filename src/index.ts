@@ -1,5 +1,5 @@
 import { fetchMetadata } from './utils';
-import { generateTypescriptTypes, parseMetadata, writeTypesToFile } from './metadataType';
+import { generateTypescriptTypes, parseMetadata, writeTypesToFile } from './typeGenerator';
 import { generateCrudOperations, writeCrudToFile } from './crudGenerator';
 import path from 'path';
 import fs from 'fs';

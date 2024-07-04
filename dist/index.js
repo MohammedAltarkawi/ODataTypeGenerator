@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.main = void 0;
 const utils_1 = require("./utils");
-const metadataType_1 = require("./metadataType");
+const typeGenerator_1 = require("./typeGenerator");
 const crudGenerator_1 = require("./crudGenerator");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
@@ -30,11 +30,11 @@ const ensureDirectoryExistence = (filePath) => {
 const mainFun = (metadataUrl, username, password) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const metadataXml = yield (0, utils_1.fetchMetadata)(metadataUrl, username, password);
-        const parsedMetadata = yield (0, metadataType_1.parseMetadata)(metadataXml);
+        const parsedMetadata = yield (0, typeGenerator_1.parseMetadata)(metadataXml);
         ensureDirectoryExistence(OUTPUT_FILE);
         ensureDirectoryExistence(CRUD_FILE);
-        const typescriptTypes = (0, metadataType_1.generateTypescriptTypes)(parsedMetadata);
-        (0, metadataType_1.writeTypesToFile)(typescriptTypes, OUTPUT_FILE);
+        const typescriptTypes = (0, typeGenerator_1.generateTypescriptTypes)(parsedMetadata);
+        (0, typeGenerator_1.writeTypesToFile)(typescriptTypes, OUTPUT_FILE);
         const crudOperations = (0, crudGenerator_1.generateCrudOperations)(parsedMetadata, OUTPUT_FILE);
         (0, crudGenerator_1.writeCrudToFile)(crudOperations, CRUD_FILE);
         console.log('CRUD operations generated successfully.');
