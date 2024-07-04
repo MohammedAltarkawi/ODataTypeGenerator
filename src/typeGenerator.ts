@@ -86,13 +86,12 @@ export interface ${typeName} {${properties}${navigationProperties}
 
 export type ${typeName}Id = {${keyProperties}
 }
-
-export interface Editable${typeName} extends Pick<${typeName}, ${entity['Property'].map((property: any) => `"${property['$']['Name']}"`).join(' | ')}> { }
 `;
     });
 
     return types;
 };
+//export interface Editable${typeName} extends Pick<${typeName}, ${entity['Property'].map((property: any) => `"${property['$']['Name']}"`).join(' | ')}> { }
 
 export const writeTypesToFile = (types: string, outputPath: string) => {
     fs.writeFileSync(outputPath, types, { encoding: 'utf8' });

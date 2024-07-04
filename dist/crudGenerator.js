@@ -32,7 +32,6 @@ const generateCrudOperations = (parsedMetadata, typesFile) => {
         if (entity['NavigationProperty']) {
             entity['NavigationProperty'].forEach((navProperty) => {
                 var _a;
-                const navPropName = navProperty['$']['Name'];
                 const relationship = navProperty['$']['Relationship'].split('.').pop();
                 const toRole = navProperty['$']['ToRole'];
                 const associationEnds = associationMap.get(relationship);
@@ -46,9 +45,13 @@ const generateCrudOperations = (parsedMetadata, typesFile) => {
         }
         // Add navigation property imports
         navImports.forEach((navImport) => {
-            classTemplate += `import { ${navImport} } from '${typesImportPath}';\n`;
+            // duplicate import vermeiden!!!! 
+            if (typeName !== navImport) {
+                classTemplate += `import { ${navImport} } from '${typesImportPath}';\n`;
+            }
         });
-        classTemplate += `\nexport class ${typeName}Service {\n`;
+        const capTypeName = typeName.charAt(0).toUpperCase() + typeName.slice(1);
+        classTemplate += `\nexport class ${capTypeName}Service {\n`;
         classTemplate += `    private oModel: ODataModel;\n\n`;
         classTemplate += `    constructor(oModel: ODataModel) {\n`;
         classTemplate += `        this.oModel = oModel;\n`;
@@ -103,8 +106,9 @@ const generateCrudOperations = (parsedMetadata, typesFile) => {
                 const associationEnds = associationMap.get(relationship);
                 if (associationEnds) {
                     const relatedEntityType = (_a = associationEnds.find((end) => end.role === toRole)) === null || _a === void 0 ? void 0 : _a.type;
+                    const capNavProperty = relatedEntityType.charAt(0).toUpperCase() + relatedEntityType.slice(1);
                     if (relatedEntityType) {
-                        const navPropFunctionName = `get${relatedEntityType}By${typeName}`;
+                        const navPropFunctionName = `get${capNavProperty}By${capTypeName}`;
                         classTemplate += `    async ${navPropFunctionName}(id: ${idTypeName}): Promise<${relatedEntityType}[]> {\n`;
                         classTemplate += `        return new Promise((resolve, reject) => {\n`;
                         classTemplate += `            this.oModel.read(\`/${typeNameSet}(\${this.idToQueryString(id)})/${navPropName}\`, {\n`;
@@ -135,7 +139,8 @@ const ensureDirectoryExistence = (filePath) => {
 };
 const writeCrudToFile = (crudOperations, outputDirectory) => {
     Object.entries(crudOperations).forEach(([typeName, classContent]) => {
-        const outputFile = path_1.default.join(outputDirectory, `${typeName}Service.ts`);
+        const camelCaseName = typeName.charAt(0).toUpperCase() + typeName.slice(1);
+        const outputFile = path_1.default.join(outputDirectory, `${camelCaseName}Service.ts`);
         ensureDirectoryExistence(outputFile); // Ensure directory exists
         fs_1.default.writeFileSync(outputFile, classContent, { encoding: 'utf8' });
         console.log(`CRUD operations for ${typeName} written to ${outputFile}`);

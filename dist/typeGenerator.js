@@ -90,13 +90,12 @@ export interface ${typeName} {${properties}${navigationProperties}
 
 export type ${typeName}Id = {${keyProperties}
 }
-
-export interface Editable${typeName} extends Pick<${typeName}, ${entity['Property'].map((property) => `"${property['$']['Name']}"`).join(' | ')}> { }
 `;
     });
     return types;
 };
 exports.generateTypescriptTypes = generateTypescriptTypes;
+//export interface Editable${typeName} extends Pick<${typeName}, ${entity['Property'].map((property: any) => `"${property['$']['Name']}"`).join(' | ')}> { }
 const writeTypesToFile = (types, outputPath) => {
     fs_1.default.writeFileSync(outputPath, types, { encoding: 'utf8' });
     console.log(`Types written to ${outputPath}`);
