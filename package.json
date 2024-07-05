@@ -1,6 +1,6 @@
 {
   "name": "odata-types-generator",
-  "version": "1.11.17",
+  "version": "1.11.18",
   "description": "A tool to convert OData metadata to TypeScript types",
   "main": "src/index.ts",
   "bin": {
