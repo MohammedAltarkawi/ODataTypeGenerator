@@ -4,3 +4,4 @@ webapp/
 ui5.yaml
 metadataTypes.js
 metadataTypes.ts
+dist

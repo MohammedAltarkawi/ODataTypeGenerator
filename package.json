@@ -1,6 +1,6 @@
 {
   "name": "odata-types-generator",
-  "version": "1.11.16",
+  "version": "1.11.17",
   "description": "A tool to convert OData metadata to TypeScript types",
   "main": "src/index.ts",
   "bin": {
@@ -8,6 +8,9 @@
     "generate-types": "./scripts/config-run.js"
   },
   "scripts": {
+    "lint": "eslint 'src/**/*.{js,ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{js,ts}' --fix",
+    "format": "prettier --write 'src/**/*.{js,ts}'",
     "build": "tsc",
     "start": "ts-node src/index.ts",
     "generate-types": "node ./scripts/config-run.js",
