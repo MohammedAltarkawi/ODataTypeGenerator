@@ -4,8 +4,8 @@ import { generateCrudOperations, writeCrudToFile } from './crudGenerator';
 import path from 'path';
 import fs from 'fs';
 
-const OUTPUT_FILE = 'webapp/model/metadataTypes.ts';
-const CRUD_FILE = 'webapp/client';
+const OUTPUT_FILE = 'webapp/model/generatedTypes.ts';
+const CRUD_FILE = 'webapp/ODataClient';
 
 const ensureDirectoryExistence = (filePath: string) => {
     const dirname = path.dirname(filePath);
@@ -15,7 +15,7 @@ const ensureDirectoryExistence = (filePath: string) => {
     fs.mkdirSync(dirname, { recursive: true });
 };
 
-const mainFun = async (metadataUrl: string, username: string, password: string) => {
+const fnMain = async (metadataUrl: string, username: string, password: string) => {
     try {
         const metadataXml = await fetchMetadata(metadataUrl, username, password);
         const parsedMetadata = await parseMetadata(metadataXml);
@@ -37,7 +37,7 @@ const mainFun = async (metadataUrl: string, username: string, password: string) 
 };
 
 // Execute mainFun with command line arguments
-mainFun(process.argv[2], process.argv[3], process.argv[4]).catch(error => console.error(error));
+fnMain(process.argv[2], process.argv[3], process.argv[4]).catch(error => console.error(error));
 
 // Export mainFun as main
-export const main = mainFun;
+export const main = fnMain;

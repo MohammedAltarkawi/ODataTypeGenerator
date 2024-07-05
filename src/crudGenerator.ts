@@ -160,7 +160,7 @@ export const writeCrudToFile = (crudOperations: { [typeName: string]: string }, 
     Object.entries(crudOperations).forEach(([typeName, classContent]) => {
         const camelCaseName = typeName.charAt(0).toUpperCase() + typeName.slice(1);
         const outputFile = path.join(outputDirectory, `${camelCaseName}Service.ts`);
-        ensureDirectoryExistence(outputFile); // Ensure directory exists
+        ensureDirectoryExistence(outputFile);
         fs.writeFileSync(outputFile, classContent, { encoding: 'utf8' });
         console.log(`CRUD operations for ${typeName} written to ${outputFile}`);
     });

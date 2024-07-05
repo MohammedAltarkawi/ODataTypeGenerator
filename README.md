@@ -1,5 +1,5 @@
 ## Overview
-This tool helps you generate types for TypeScript from OData. The types are extracted through metadata. 
+This tool helps you generate types nd OData client from OData. The types are extracted through metadata. 
 The tool locates the manifest.json, extracts the OData service URL, and the server from the ui5.yaml file.
 
 ## Installing
