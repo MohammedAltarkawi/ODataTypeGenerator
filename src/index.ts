@@ -43,10 +43,10 @@ const fnMain = async (
   }
 };
 
-// Execute mainFun with command line arguments
+// Execute fnMain with command line arguments
 fnMain(process.argv[2], process.argv[3], process.argv[4]).catch((error) =>
   console.error(error),
 );
 
-// Export mainFun as main
+// Export fnMain as main
 export const main = fnMain;
